@@ -69,3 +69,20 @@ CREATE TABLE komentarze_obiektu (
 
 ALTER TABLE koncerty
 ADD FOREIGN KEY (id_zespolu) REFERENCES zespoly(id_zespolu);
+
+
+/******************/
+
+ALTER TABLE obiekty
+ADD nazwa_obiektu varchar(50) not null unique ;
+
+DROP TABLE komentarze_koncerty;
+
+CREATE TABLE komentarze_zespoly (
+  id_kom_zespolu int(12) NOT NULL UNIQUE AUTO_INCREMENT,
+  id_zespolu int(12) NOT NULL,
+  ocena_zespolu smallint(3),
+  kom_zespolu_tekst varchar(200),
+  PRIMARY KEY (id_kom_zespolu),
+  FOREIGN KEY (id_zespolu) REFERENCES zespoly (id_zespolu)
+);
