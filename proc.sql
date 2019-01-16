@@ -58,6 +58,7 @@ __:begin
 	declare _login varchar(20);
 	declare _haslo varchar(70);
 	declare exit handler for 1452 set ret = "id_obiektu or id_zespolu not found";
+	declare exit handler for 1644 set ret = "incorrect values";
 	select login, haslo into _login, _haslo from wlasciciele join obiekty where obiekty.id_wlasciciela = wlasciciele.id_wlasciciela and obiekty.id_obiektu = id_obiektu;
 	if _login != dlogin or _haslo != sha2( dhaslo, 256 ) then
 		set ret = "authentication failed";
@@ -90,6 +91,16 @@ __:begin
 	declare exit handler for 1452 set ret = "id_koncertu not found";
 	declare exit handler for 1048 set ret = "forbidden null value";
 	declare exit handler for 1265 set ret = "wrong rodzaj_miejsca value";
+	-- autoryzacja
+	select login, haslo into _login, _haslo
+		from wlasciciele
+		join obiekty on obiekty.id_wlasciciela = wlasciciele.id_wlasciciela
+		join koncerty on koncerty.id_obiektu = obiekty.id_obiektu
+		where koncerty.id_koncertu = idk;
+	if _login != dlogin or _haslo != sha2( dhaslo, 256 ) then
+		set ret = "authentication failed";
+		leave __;
+	end if;
 	-- pobieramy max
 	if rodzaj_miejsca = 'siedzace' then
 		select obiekty.il_miejsc_siedzacych into mx from obiekty join (select * from koncerty where id_koncertu = idk ) kon on obiekty.id_obiektu = kon.id_obiektu;
@@ -103,6 +114,28 @@ __:begin
 		set ret = "num too big";
 		leave __;
 	end if;
+	while cnt < num do
+		insert into bilety values( null, idk, cena, rodzaj_miejsca, false );
+		set cnt = cnt+1;
+	end while;
+	set ret = "success";
+end$$
+
+delimiter ;
+
+drop procedure if exists anuluj_koncert;
+delimiter $$
+
+create procedure anuluj_koncert(
+	idk int(12),
+	in dlogin varchar(20),
+	in dhaslo varchar(50),
+	out ret varchar(50)
+)
+__:begin
+	declare _login varchar(20);
+	declare _haslo varchar(70);
+	declare exit handler for 1452 set ret = "id_obiektu not found";
 	-- autoryzacja
 	select login, haslo into _login, _haslo
 		from wlasciciele
@@ -113,11 +146,33 @@ __:begin
 		set ret = "authentication failed";
 		leave __;
 	end if;
-	while cnt < num do
-		insert into bilety values( null, idk, cena, rodzaj_miejsca, false );
-		set cnt = cnt+1;
-	end while;
+	-- sprawdź czy nie zaczęła się sprzedaż
+	if (select data_sprzedarzy from koncerty where id_koncertu = idk ) < now() then
+		set ret = "sale already started";
+		leave __;
+	end if;
+	-- usuń bilety
+	delete from bilety where id_koncertu = idk;
+	-- usuń koncert
+	delete from koncerty where id_koncertu = idk;
 	set ret = "success";
+end$$
+
+delimiter ;
+
+drop trigger if exists koncerty_check;
+delimiter $$
+
+create trigger koncerty_check
+before insert on koncerty
+for each row
+begin
+	if( NEW.data_koncertu < now() ) then
+		signal sqlstate '45000' set message_text = 'cannot pass past date';
+	end if;
+	if( NEW.data_koncertu < NEW.data_sprzedarzy ) then
+		signal sqlstate '45000' set message_text = 'show date earlier than sale date';
+	end if;
 end$$
 
 delimiter ;
