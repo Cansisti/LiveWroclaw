@@ -86,3 +86,6 @@ CREATE TABLE komentarze_zespoly (
   PRIMARY KEY (id_kom_zespolu),
   FOREIGN KEY (id_zespolu) REFERENCES zespoly (id_zespolu)
 );
+
+CREATE USER 'debug'@'%' IDENTIFIED BY 'debug';
+GRANT ALL PRIVILEGES ON livewroclaw2.* TO 'debug'@'%';
