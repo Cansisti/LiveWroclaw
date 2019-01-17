@@ -10,4 +10,4 @@ select id_zespolu into @JaiPri from zespoly where nazwa_zespolu = "Jaskier i Pri
 call dodaj_koncert( @SzaiRo, @JaiPri, "2019-05-21", "2019-04-21", "Jaskier", "123", @ret ); select @ret;
 select id_koncertu into @JKoncert from koncerty where id_obiektu = @SzaiRo limit 1; select @JKoncert;
 call dodaj_bilety( 30, @JKoncert, 100, 'siedzace', "Jaskier", "123", @ret ); select @ret;
---call anuluj_koncert( @JKoncert, "Jaskier", "123", @ret ); select @ret;
+-- call anuluj_koncert( @JKoncert, "Jaskier", "123", @ret ); select @ret;
