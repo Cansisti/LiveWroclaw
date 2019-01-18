@@ -1,8 +1,9 @@
 source tabele.sql
 source proc.sql
+source users.sql
 
 call dodaj_wlasciciela( "Jaskier", "123", @ret ); select @ret;
-select id_wlasciciela into @Jaskier from wlasciciele where login = "Jaskier"; select @Jaskier;
+call autoryzacja( "Jaskier", "123", @Jaskier, @ret); select @ret; select @Jaskier;
 call dodaj_obiekt( "Sza³wia i Rozmaryn", @Jaskier, "Novigrad", 45, 20, "Jaskier", "123", @ret ); select @ret;
 select id_obiektu into @SzaiRo from obiekty where nazwa_obiektu = "Sza³wia i Rozmaryn"; select @SzaiRo;
 insert into zespoly values( null, "Jaskier i Priscilla", "Ballady" ); select * from zespoly;

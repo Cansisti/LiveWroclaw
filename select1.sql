@@ -76,17 +76,3 @@ CREATE PROCEDURE wyszukaj3(max_cena int)
 
   END $$
 DELIMITER ;
-
-
-
-
-
-
-CALL wyszukaj('abc');
-DROP PROCEDURE IF EXISTS wyszukaj;
-
-CALL wyszukaj2('2017-04-15', '2017-06-15');
-DROP PROCEDURE IF EXISTS wyszukaj2;
-
-CALL wyszukaj3(200);
-DROP PROCEDURE IF EXISTS wyszukaj3;

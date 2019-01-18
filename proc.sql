@@ -176,3 +176,24 @@ begin
 end$$
 
 delimiter ;
+
+drop procedure if exists autoryzacja;
+
+delimiter $$
+
+create procedure autoryzacja(
+	in dlogin varchar(20),
+	in dhaslo varchar(50),
+	out did int,
+	out ret varchar(50)
+)
+__:begin
+	select id_wlasciciela into did from wlasciciele where login = dlogin and haslo = sha2( dhaslo, 256 );
+	if did is null then
+		set ret = "authentication failed";
+		leave __;
+	end if;
+	set ret = "success";
+end$$
+
+delimiter ;
