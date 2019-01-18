@@ -1,4 +1,5 @@
-package LiveWroclaw;
+package liveWroclaw;
+
 
 import java.awt.BorderLayout;
 import java.awt.Panel;
