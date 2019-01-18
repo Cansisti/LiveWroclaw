@@ -1,6 +1,9 @@
 package LiveWroclaw;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Frame;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -13,32 +16,48 @@ import java.util.Properties;
 public class App extends WindowAdapter implements ActionListener {
 	
 	Frame frame;
-	Connection conn;
-	Properties prop;
+	static Connection conn;
+	Panel panel;
 	
 	public App() {
 		frame = new Frame( "LiveWrocław" );
         frame.setBounds( 300, 100, 1024/2, 768/2 );
         frame.addWindowListener( this );
         frame.setVisible( true );
+        frame.setLayout( new BorderLayout() );
         
-        prop = new Properties();
-        prop.put( "user", "debug" );
-        prop.put( "password", "debug" );
-        prop.put( "serverTimezone", "UTC" );
-        prop.put( "useSSL", "FALSE" );
-        prop.put( "allowPublicKeyRetrieval", "TRUE" );
+        frame.add( new LoginPanel( this ), BorderLayout.SOUTH );
         
         try {
-			conn = DriverManager.getConnection( "jdbc:mysql://localhost:3306/livewroclaw2", prop );
+        	connect( "klient", "klient" );
+        	System.out.println( "Connected as klient" );
+        	setPanel( new SearchPanel() );
 		} catch( SQLException e ) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void setPanel( Panel p ) {
+		if( panel != null ) frame.remove( (Component) panel );
+		panel = p;
+		frame.add( panel, BorderLayout.NORTH );
+		frame.setVisible( true );
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		
+	}
+	
+	public static void connect( String user, String passwd ) throws SQLException {
+		Properties prop = new Properties();
+        prop.put( "user", user );
+        prop.put( "password", passwd );
+        prop.put( "serverTimezone", "UTC" );
+        prop.put( "useSSL", "FALSE" );
+        prop.put( "allowPublicKeyRetrieval", "TRUE" );
+        
+        conn = DriverManager.getConnection( "jdbc:mysql://localhost:3306/livewroclaw2", prop );
 	}
 	
 	@Override
