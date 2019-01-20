@@ -1,8 +1,6 @@
 package liveWroclaw;
 
-
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
@@ -16,18 +14,22 @@ import java.util.Properties;
 
 public class App extends WindowAdapter implements ActionListener {
 	
-	Frame frame;
+	static Frame frame;
 	static Connection conn;
 	Panel panel;
+	LoginPanel loginPanel;
 	
 	public App() {
 		frame = new Frame( "LiveWrocław" );
         frame.setBounds( 300, 100, 1024/2, 768/2 );
         frame.addWindowListener( this );
-        frame.setVisible( true );
         frame.setLayout( new BorderLayout() );
         
-        frame.add( new LoginPanel( this ), BorderLayout.SOUTH );
+        loginPanel = new LoginPanel( this );
+        
+        frame.add( loginPanel, BorderLayout.SOUTH );
+        
+        frame.setVisible( true );
         
         try {
         	connect( "klient", "klient" );
@@ -39,14 +41,16 @@ public class App extends WindowAdapter implements ActionListener {
 	}
 	
 	public void setPanel( Panel p ) {
-		if( panel != null ) frame.remove( (Component) panel );
+		if( panel != null ) {
+			frame.remove( panel );
+		}
 		panel = p;
 		frame.add( panel, BorderLayout.NORTH );
 		frame.setVisible( true );
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed( ActionEvent arg0 ) {
 		
 	}
 	

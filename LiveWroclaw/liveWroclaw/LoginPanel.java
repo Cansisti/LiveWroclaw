@@ -1,9 +1,9 @@
 package liveWroclaw;
 
-
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Dimension;
+import java.awt.Label;
 import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
@@ -18,6 +18,7 @@ public class LoginPanel extends Panel implements ActionListener {
 	TextField login;
 	TextField password;
 	Button apply;
+	Label msg;
 	App app;
 	
 	public LoginPanel( App _app ) {
@@ -26,7 +27,8 @@ public class LoginPanel extends Panel implements ActionListener {
 		
 		login = new TextField();
 		password = new TextField();
-		apply = new Button( "Login" );
+		apply = new Button( "Zaloguj" );
+		msg = new Label();
 		
 		login.setPreferredSize( new Dimension( 220, 0 ) );
 		apply.setPreferredSize( new Dimension( 70, 0 ) );
@@ -36,19 +38,21 @@ public class LoginPanel extends Panel implements ActionListener {
 		add( login, BorderLayout.WEST );
 		add( password, BorderLayout.CENTER );
 		add( apply, BorderLayout.EAST );
+		add( msg, BorderLayout.NORTH );
 		
 	}
 
 	@Override
 	public void actionPerformed( ActionEvent eve ) {
 		if( eve.getSource() == apply ) {
+			msg.setText( "" );
 			try {
-				if( apply.getLabel().equals( "Logout" ) ) {
+				if( apply.getLabel().equals( "Wyloguj" ) ) {
 					App.connect( "klient", "klient" );
 					login.setEditable( true );
 					login.setText( "" );
-					password.setVisible( true );
-					apply.setLabel( "Login" );
+					password.setEditable( true );
+					apply.setLabel( "Zaloguj" );
 					System.out.println( "Connected as klient" );
 					app.setPanel( new SearchPanel() );
 					return;
@@ -59,10 +63,15 @@ public class LoginPanel extends Panel implements ActionListener {
 					if( spasswd.equals( "LiveWroclaw" ) ) {
 						App.connect( "admin", "asd9ebi1d97wbuscnaufb1cnbaybcs1" );
 						System.out.println( "Connected as admin" );
+						login.setEditable( false );
+						password.setEditable( false );
+						password.setText( "" );
+						apply.setLabel( "Wyloguj" );
 						return;
 					}
 				}
-				CallableStatement cstmt = App.conn.prepareCall( "call autoryzacja( ?, ?, ?, ?)" );
+				
+				CallableStatement cstmt = App.conn.prepareCall( "call autoryzacja( ?, ?, ?, ? )" );
 				cstmt.setString( 1, slogin );
 				cstmt.setString( 2, spasswd );
 				cstmt.registerOutParameter( 3, Types.INTEGER );
@@ -77,14 +86,15 @@ public class LoginPanel extends Panel implements ActionListener {
 					App.connect( "wlasciciel", "wla7182311bvd1utdvu1d" );
 					System.out.println( "Connected as wlasciciel" );
 					login.setEditable( false );
+					password.setEditable( false );
 					password.setText( "" );
-					password.setVisible( false );
-					apply.setLabel( "Logout" );
-					app.setPanel( new ManagePanel( id ) );
+					apply.setLabel( "Wyloguj" );
+					app.setPanel( new ManagePanel( id, slogin, spasswd  ));
 					return;
 				}
 				else {
 					System.out.println( "Authentication failed" );
+					msg.setText( "Niepowodzenie logowania" );
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
