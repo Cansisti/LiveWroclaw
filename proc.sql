@@ -88,6 +88,7 @@ __:begin
 	declare cnt int default 0; -- licznik do pętli
 	declare cr int default 0; -- aktualna ilość biletów
 	declare mx int default 0; -- maksymalna ilość biletów
+	declare fr int default 0; -- pozostale bilety
 	declare exit handler for 1452 set ret = "id_koncertu not found";
 	declare exit handler for 1048 set ret = "forbidden null value";
 	declare exit handler for 1265 set ret = "wrong rodzaj_miejsca value";
@@ -114,10 +115,19 @@ __:begin
 		set ret = "num too big";
 		leave __;
 	end if;
+	start transaction;
 	while cnt < num do
 		insert into bilety values( null, idk, cena, rodzaj_miejsca, false );
 		set cnt = cnt+1;
 	end while;
+	if rodzaj_miejsca = 'siedzace' then
+		update koncerty set il_miejsc_siedzacych = num+cr where id_koncertu = idk;
+	else
+		update koncerty set il_miejsc_stojacych = num+cr where id_koncertu = idk;
+	end if;
+	select il_pozostalych_biletow into fr from koncerty where id_koncertu = idk;
+	update koncerty set il_pozostalych_biletow = fr + num;
+	commit;
 	set ret = "success";
 end$$
 
