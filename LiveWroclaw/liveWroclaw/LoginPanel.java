@@ -40,6 +40,7 @@ public class LoginPanel extends Panel implements ActionListener {
 		add( apply, BorderLayout.EAST );
 		add( msg, BorderLayout.NORTH );
 		
+		
 	}
 
 	@Override

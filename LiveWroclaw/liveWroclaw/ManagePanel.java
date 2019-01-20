@@ -88,7 +88,7 @@ public class ManagePanel extends Panel implements ActionListener, ItemListener {
 		}
 		if( eve.getSource() == rem ) {
 			if( obj > 0 ) {
-				desc.setText( "Not implemented yet" );
+				desc.setText( "Najpierw wybierz koncert" );
 			}
 			else if( obj < 0 ) {
 				int ix = list.getSelectedIndex() - 1;
@@ -408,7 +408,7 @@ public class ManagePanel extends Panel implements ActionListener, ItemListener {
 							dialog.dispose();
 						}
 						else {
-							if( ret.equals( "incorrect values" ) ) status.setText( "Podano sprzeczne dane" );
+							if( ret.equals( "incorrect values" ) ) status.setText( "Podane daty są sprzeczne, przeszłe, lub zajęte" );
 							else status.setText( "Odmowa dostępu!" );
 						}
 					} catch( SQLException e1 ) {
