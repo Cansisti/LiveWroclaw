@@ -81,7 +81,10 @@ public class ManagePanel extends Panel implements ActionListener, ItemListener {
 	@Override
 	public void actionPerformed( ActionEvent eve ) {
 		if( eve.getSource() == add ) {
+			if( obj > 0 ) obj *= -1;
+			else lvl++;
 			new AddDialog( App.frame );
+			reload();
 		}
 		if( eve.getSource() == rem ) {
 			if( obj > 0 ) {
@@ -96,6 +99,14 @@ public class ManagePanel extends Panel implements ActionListener, ItemListener {
 					cstmt.setString( 3, passwd );
 					cstmt.registerOutParameter( 4, Types.VARCHAR );
 					cstmt.executeUpdate();
+					if( cstmt.getString( 4 ).equals( "sale already started" ) ) {
+						desc.setText( "Sprzedaż już się rozpoczęła" );
+						return;
+					}
+					else if( cstmt.getString( 4 ).equals( "authentication failed" ) ) {
+						desc.setText( "Odmowa dostępu!" );
+						return;
+					}
 					reload();
 					obj *= -1;
 				} catch (SQLException e) {
@@ -147,6 +158,7 @@ public class ManagePanel extends Panel implements ActionListener, ItemListener {
 												+ "(select id_obiektu from obiekty where nazwa_obiektu = '" + sel + "' ) o "
 												+ "join koncerty k on o.id_obiektu = k.id_obiektu "
 												+ "join zespoly z on k.id_zespolu = z.id_zespolu" );
+				kon.clear();
 				while( rs.next() ) {
 					list.add( rs.getString( 1 ) + ", " + rs.getString( 2 ) );
 					kon.add( rs.getInt( 3 ) );
@@ -410,10 +422,100 @@ public class ManagePanel extends Panel implements ActionListener, ItemListener {
 			
 		}
 		
-		class DodajBilety extends Panel {
+		class DodajBilety extends Panel implements ActionListener {
 			private static final long serialVersionUID = 1L;
 			
+			Choice koncert, typ;
+			TextField ilosc, cena;
+			Button add, cancel;
+			Label status;
+			
+			ArrayList<Integer> kon;
+			
+			DodajBilety() {
+				setLayout( new GridLayout( 11, 1 ) );
+				kon = new ArrayList<>();
+				
+				
+				status = new Label();
+				koncert = new Choice();
+				typ = new Choice();
+				ilosc = new TextField();
+				cena = new TextField();
+				add = new Button( "Dodaj" );
+				cancel = new Button( "Anuluj" );
+				
+				add.addActionListener( this );
+				cancel.addActionListener( this );
+				typ.add( "Siedzące" );
+				typ.add( "Stojące" );
+				
+				add( new Label( "Koncert:" ) );
+				add( koncert );
+				add( new Label( "Ilość:" ) );
+				add( ilosc );
+				add( new Label( "Cena:" ) );
+				add( cena );
+				add( new Label( "Typ: " ) );
+				add( typ );
+				add( status );
+				add( add );
+				add( cancel );
+				
+				try {
+					Statement stmt = App.conn.createStatement();
+					ResultSet rs = stmt.executeQuery( "select nazwa_zespolu, data_koncertu, id_koncertu, nazwa_obiektu from "
+													+ "obiekty o "
+													+ "join koncerty k on o.id_obiektu = k.id_obiektu "
+													+ "join zespoly z on k.id_zespolu = z.id_zespolu" );
+					while( rs.next() ) {
+						koncert.add( rs.getString( 1 ) + ", " + rs.getString( 2 ) + " " + rs.getString( 4 ) );
+						kon.add( rs.getInt( 3 ) );
+					}
+				} catch (SQLException e) {
+					status.setText( "Błąd bazy danych 0x5" );
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void actionPerformed( ActionEvent e ) {
+				if( e.getSource() == add ) {
+					try {
+						CallableStatement cstmt = App.conn.prepareCall( "call dodaj_bilety( ?, ?, ?, ?, ?, ?, ? )" );
+						cstmt.setInt( 1, Integer.parseInt( ilosc.getText() ) );
+						cstmt.setInt( 2, kon.get( koncert.getSelectedIndex() ) );
+						cstmt.setInt( 3, Integer.parseInt( cena.getText() ) );
+						cstmt.setString( 4, typ.getSelectedItem() );
+						cstmt.setString( 5, login );
+						cstmt.setString( 6, passwd );
+						cstmt.registerOutParameter( 7, Types.VARCHAR );
+						cstmt.executeUpdate();
+						String ret = cstmt.getString( 7 );
+						if( ret.equals( "success" ) ) {
+							dialog.dispose();
+						}
+						else {
+							if( ret.equals( "num too big" ) ) status.setText( "Przekroczono deklarowaną liczbę miejsc" );
+							else if( ret.equals( "authorization failes" ) ) status.setText( "Odmowa dostępu!" );
+							else status.setText( "Błędne dane" );
+						}
+					} catch( SQLException e1 ) {
+						status.setText( "Błąd bazy danych 0x7" );
+						e1.printStackTrace();
+						return;
+					}
+					catch( NumberFormatException ex ) {
+						status.setText( "Niepoprawny format" );
+						ex.printStackTrace();
+						return;
+					}
+				}
+				
+			}
 			
 		}
+		
 	}
+	
 }

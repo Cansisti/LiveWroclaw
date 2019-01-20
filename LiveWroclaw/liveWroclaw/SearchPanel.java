@@ -35,12 +35,6 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener {
             String wzor = searchbox.getText();
 
             System.out.println("Wyszukaj: " + wzor);
-            // TODO
-            // Tutaj procedura wyszukiwania
-            // searchbox.getText() zwraca tekst wyszukiwania
-            // na razie spróbujmy z samym wyszukiwaniem
-            // list.add( ~~String~~ ) dodaje element do listy
-
 
 //			try {
 //				CallableStatement cstmt = App.conn.prepareCall( "call wyszukaj(?)" );
@@ -62,15 +56,14 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener {
                 ResultSet rs = stmt.executeQuery("SELECT data_koncertu, il_pozostalych_biletow, nazwa_zespolu, kategoria, nazwa_obiektu FROM koncerty\n" +
                         "        JOIN zespoly ON koncerty.id_zespolu = zespoly.id_zespolu\n" +
                         "        JOIN obiekty ON koncerty.id_obiektu = obiekty.id_obiektu\n" +
-                        "        WHERE data_koncertu<=CURDATE() AND\n" +
+                        "        WHERE data_koncertu >= now() AND\n" +
                         "        il_pozostalych_biletow>0 AND\n" +
                         "        (nazwa_zespolu LIKE '%" + wzor + "%' \n" +
                         "        OR nazwa_obiektu LIKE '%" + wzor + "%'\n" +
                         "        OR kategoria LIKE '%" + wzor + "%');");
-
+                
                 while (rs.next()) {
                     list.add(rs.getString(1));
-                    //System.out.println(rs.getString(1));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

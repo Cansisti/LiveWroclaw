@@ -36,7 +36,7 @@ __:begin
 		set ret = "authentication failed";
 		leave __;
 	end if;
-	insert into obiekty values( null, idw, adres, msie, msto, nazwa );
+	insert into obiekty values( null, idw, nazwa, adres, msie, msto );
 	set ret = "success";
 end$$
 
@@ -64,7 +64,7 @@ __:begin
 		set ret = "authentication failed";
 		leave __;
 	end if;
-	insert into koncerty values( null, id_obiektu, id_zespolu, data_koncertu, data_sprzedarzy, 0, 0, 0 );
+	insert into koncerty values( null, id_obiektu, id_zespolu, data_koncertu, data_sprzedarzy, 0, 0, 0, 0 );
 	set ret = "success";
 end$$
 

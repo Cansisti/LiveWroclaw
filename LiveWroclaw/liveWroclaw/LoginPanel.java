@@ -67,6 +67,7 @@ public class LoginPanel extends Panel implements ActionListener {
 						password.setEditable( false );
 						password.setText( "" );
 						apply.setLabel( "Wyloguj" );
+						app.setPanel( new AdminPanel() );
 						return;
 					}
 				}
