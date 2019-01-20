@@ -4,15 +4,16 @@ CREATE DATABASE livewroclaw2;
 USE livewroclaw2;
 
 CREATE TABLE wlasciciele (
-  id_wlasciciela int(12) NOT NULL UNIQUE AUTO_INCREMENT,
+  id_wlasciciela int(12)     NOT NULL UNIQUE AUTO_INCREMENT,
   login          varchar(20) NOT NULL UNIQUE,
   haslo          varchar(70),
   PRIMARY KEY (id_wlasciciela)
 );
 
 CREATE TABLE obiekty (
-  id_obiektu           int(12) NOT NULL UNIQUE AUTO_INCREMENT,
-  id_wlasciciela       int(12) NOT NULL,
+  id_obiektu           int(12)     NOT NULL UNIQUE AUTO_INCREMENT,
+  id_wlasciciela       int(12)     NOT NULL,
+  nazwa_obiektu        varchar(50) not null unique,
   adres                varchar(50),
   il_miejsc_siedzacych smallint(5) unsigned,
   il_miejsc_stojacych  smallint(5) unsigned,
@@ -29,6 +30,7 @@ CREATE TABLE koncerty (
   il_miejsc_siedzacych   smallint(5) unsigned,
   il_miejsc_stojacych    smallint(5) unsigned,
   il_pozostalych_biletow smallint(5) unsigned,
+  akt_najtanszy_bilet    int(4)  NOT NULL,
   PRIMARY KEY (id_koncertu),
   FOREIGN KEY (id_obiektu) REFERENCES obiekty (id_obiektu)
 );
@@ -43,46 +45,27 @@ CREATE TABLE bilety (
 );
 
 CREATE TABLE zespoly (
-  id_zespolu int(12) NOT NULL UNIQUE AUTO_INCREMENT,
+  id_zespolu    int(12)     NOT NULL UNIQUE AUTO_INCREMENT,
   nazwa_zespolu varchar(40) NOT NULL UNIQUE,
-  kategoria varchar(100),
+  kategoria     varchar(100),
   PRIMARY KEY (id_zespolu)
 );
 
-CREATE TABLE komentarze_koncerty (
-  id_kom_koncertu int(12) NOT NULL UNIQUE AUTO_INCREMENT,
-  id_koncertu int(12) NOT NULL,
-  ocena_koncertu smallint(3),
-  kom_koncertu_tekst varchar(200),
-  PRIMARY KEY (id_kom_koncertu),
-  FOREIGN KEY (id_koncertu) REFERENCES koncerty (id_koncertu)
+CREATE TABLE komentarze_zespoly (
+  id_kom_zespolu    int(12) NOT NULL UNIQUE AUTO_INCREMENT,
+  id_zespolu        int(12) NOT NULL,
+  ocena_zespolu     smallint(3),
+  kom_zespolu_tekst varchar(200),
+  PRIMARY KEY (id_kom_zespolu)
 );
 
 CREATE TABLE komentarze_obiektu (
-  id_kom_obiektu int(12) NOT NULL UNIQUE AUTO_INCREMENT,
-  id_obiektu int(12) NOT NULL,
-  ocena_obiektu smallint(3),
+  id_kom_obiektu    int(12) NOT NULL UNIQUE AUTO_INCREMENT,
+  id_obiektu        int(12) NOT NULL,
+  ocena_obiektu     smallint(3),
   kom_obiektu_tekst varchar(200),
-  PRIMARY KEY (id_kom_obiektu),
-  FOREIGN KEY (id_obiektu) REFERENCES obiekty (id_obiektu)
+  PRIMARY KEY (id_kom_obiektu)
 );
 
 ALTER TABLE koncerty
-ADD FOREIGN KEY (id_zespolu) REFERENCES zespoly(id_zespolu);
-
-
-/******************/
-
-ALTER TABLE obiekty
-ADD nazwa_obiektu varchar(50) not null unique ;
-
-DROP TABLE komentarze_koncerty;
-
-CREATE TABLE komentarze_zespoly (
-  id_kom_zespolu int(12) NOT NULL UNIQUE AUTO_INCREMENT,
-  id_zespolu int(12) NOT NULL,
-  ocena_zespolu smallint(3),
-  kom_zespolu_tekst varchar(200),
-  PRIMARY KEY (id_kom_zespolu),
-  FOREIGN KEY (id_zespolu) REFERENCES zespoly (id_zespolu)
-);
+  ADD FOREIGN KEY (id_zespolu) REFERENCES zespoly (id_zespolu);
