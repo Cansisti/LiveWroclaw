@@ -89,6 +89,7 @@ __:begin
 	declare cr int default 0; -- aktualna ilość biletów
 	declare mx int default 0; -- maksymalna ilość biletów
 	declare fr int default 0; -- pozostale bilety
+	declare min_cena int default 0; -- minimalna cena
 	declare exit handler for 1452 set ret = "id_koncertu not found";
 	declare exit handler for 1048 set ret = "forbidden null value";
 	declare exit handler for 1265 set ret = "wrong rodzaj_miejsca value";
@@ -102,7 +103,7 @@ __:begin
 		set ret = "authentication failed";
 		leave __;
 	end if;
-	-- pobieramy max
+	-- pobieramy max i min_cena
 	if rodzaj_miejsca = 'siedzace' then
 		select obiekty.il_miejsc_siedzacych into mx from obiekty join (select * from koncerty where id_koncertu = idk ) kon on obiekty.id_obiektu = kon.id_obiektu;
 	else
@@ -127,6 +128,10 @@ __:begin
 	end if;
 	select il_pozostalych_biletow into fr from koncerty where id_koncertu = idk;
 	update koncerty set il_pozostalych_biletow = fr + num;
+	select akt_najtanszy_bilet into min_cena from koncerty where id_koncertu = idk;	
+	if min_cena > cena or min_cena = 0 then
+		update koncerty set akt_najtanszy_bilet = cena where id_koncertu = idk;
+	end if;
 	commit;
 	set ret = "success";
 end$$
@@ -177,11 +182,14 @@ create trigger koncerty_check
 before insert on koncerty
 for each row
 begin
-	if( NEW.data_koncertu < now() ) then
+	if( new.data_koncertu < now() ) then
 		signal sqlstate '45000' set message_text = 'cannot pass past date';
 	end if;
-	if( NEW.data_koncertu < NEW.data_sprzedarzy ) then
+	if( new.data_koncertu < new.data_sprzedarzy ) then
 		signal sqlstate '45000' set message_text = 'show date earlier than sale date';
+	end if;
+	if( new.data_koncertu in (select data_koncertu from koncerty where id_obiektu = new.id_obiektu) ) then
+		signal sqlstate '45000' set message_text = 'term busy';
 	end if;
 end$$
 
