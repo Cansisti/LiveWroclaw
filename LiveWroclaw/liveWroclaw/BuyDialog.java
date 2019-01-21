@@ -12,9 +12,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.CallableStatement;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 
 public class BuyDialog extends WindowAdapter implements ActionListener, ItemListener {
 
@@ -61,23 +59,12 @@ public class BuyDialog extends WindowAdapter implements ActionListener, ItemList
             try {
                 int ilosc_biletow = Integer.parseInt(ilosc.getText());
                 int rodzaj_miejsca = typ.getSelectedIndex(); // 0 to siedzące, 1 to stojące
-                // id_koncertu jest dane
-                // TODO
-                // kupić bilety
 
                 CallableStatement cstmt = App.conn.prepareCall("call kup_bilet2( ?, ?, ?)");
                 cstmt.setInt(1, id_koncertu);
                 cstmt.setInt(2, rodzaj_miejsca);
                 cstmt.setInt(3, ilosc_biletow);
                 cstmt.executeUpdate();
-
-
-//                CallableStatement cstmt = App.conn.prepareCall("call kup_bilet( ?, ?, ?)");
-//                int c = 0;
-//                cstmt.registerOutParameter(1, Types.INTEGER);
-//                cstmt.execute();
-//                c = cstmt.getInt(1);
-//                System.out.println(c);
 
 
             } catch (SQLException ex) {
@@ -90,20 +77,32 @@ public class BuyDialog extends WindowAdapter implements ActionListener, ItemList
 
     @Override
     public void itemStateChanged(ItemEvent arg0) {
-        // TODO
-
         int cena = 0;
+
+        int il = Integer.parseInt(ilosc.getText());
+
         if (arg0.getItem().equals("Siedzące")) {
-            // TODO
-            typ.select(0);
+
+            try {
+                Statement stmt = App.conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT DISTINCT cena FROM bilety WHERE rodzaj_miejsca = 'siedzace' ");
+                cena = rs.getInt(1);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
         }
         if (arg0.getItem().equals("Stojące")) {
-            // TODO
-            typ.select(1);
+            try {
+                Statement stmt = App.conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT DISTINCT cena FROM bilety WHERE rodzaj_miejsca = 'stojace' ");
+                cena = rs.getInt(1);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
         }
-        status.setText("Cena: " + cena);
+        status.setText("Cena: " + cena*il);
     }
 
 
