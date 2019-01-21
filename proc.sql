@@ -128,7 +128,7 @@ __:begin
 		update koncerty set il_miejsc_stojacych = num+cr where id_koncertu = idk;
 	end if;
 	select il_pozostalych_biletow into fr from koncerty where id_koncertu = idk;
-	update koncerty set il_pozostalych_biletow = fr + num;
+	update koncerty set il_pozostalych_biletow = fr + num where id_koncertu = idk;
 	select akt_najtanszy_bilet into min_cena from koncerty where id_koncertu = idk;	
 	if min_cena > cena or min_cena = 0 then
 		update koncerty set akt_najtanszy_bilet = cena where id_koncertu = idk;

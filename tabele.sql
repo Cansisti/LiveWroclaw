@@ -30,7 +30,7 @@ CREATE TABLE koncerty (
   il_miejsc_siedzacych   smallint(5) unsigned,
   il_miejsc_stojacych    smallint(5) unsigned,
   il_pozostalych_biletow smallint(5) unsigned,
-  akt_najtanszy_bilet    int(4)  NOT NULL,
+  akt_najtanszy_bilet    int(4),
   PRIMARY KEY (id_koncertu),
   FOREIGN KEY (id_obiektu) REFERENCES obiekty (id_obiektu)
 );
