@@ -81,7 +81,7 @@ public class ManagePanel extends Panel implements ActionListener, ItemListener {
 	@Override
 	public void actionPerformed( ActionEvent eve ) {
 		if( eve.getSource() == add ) {
-			if( obj > 0 ) obj *= -1;
+			if( obj >= 0 ) obj *= -1;
 			else lvl++;
 			new AddDialog( App.frame );
 			reload();
@@ -466,7 +466,7 @@ public class ManagePanel extends Panel implements ActionListener, ItemListener {
 				try {
 					Statement stmt = App.conn.createStatement();
 					ResultSet rs = stmt.executeQuery( "select nazwa_zespolu, data_koncertu, id_koncertu, nazwa_obiektu from "
-													+ "obiekty o "
+													+ "(select * from obiekty where id_wlasciciela =" + id + " ) o "
 													+ "join koncerty k on o.id_obiektu = k.id_obiektu "
 													+ "join zespoly z on k.id_zespolu = z.id_zespolu" );
 					while( rs.next() ) {

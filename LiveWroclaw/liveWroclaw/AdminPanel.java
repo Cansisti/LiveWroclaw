@@ -79,7 +79,7 @@ public class AdminPanel extends Panel implements ActionListener, ItemListener {
 		try {
 			int x = zespoly.getSelectedIndex();
 			Statement stmt = App.conn.createStatement();
-			ResultSet rs = stmt.executeQuery( "select * from zespoly" );
+			ResultSet rs = stmt.executeQuery( "select * from zespoly order by nazwa_zespolu" );
 			zespoly.removeAll();
 			zids.clear();
 			names.clear();

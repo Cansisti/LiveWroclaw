@@ -27,7 +27,7 @@ public class BuyDialog extends WindowAdapter implements ActionListener, ItemList
 
     BuyDialog(int idk) {
         id_koncertu = idk;
-        dialog = new Dialog(App.frame);
+        dialog = new Dialog(App.frame, true);
         dialog.addWindowListener(this);
         dialog.setBounds(350, 150, 500, 200);
         dialog.setLayout(new GridLayout(6, 1));
@@ -60,12 +60,14 @@ public class BuyDialog extends WindowAdapter implements ActionListener, ItemList
                 int ilosc_biletow = Integer.parseInt(ilosc.getText());
                 int rodzaj_miejsca = typ.getSelectedIndex(); // 0 to siedzące, 1 to stojące
 
-                CallableStatement cstmt = App.conn.prepareCall("call kup_bilet2( ?, ?, ?)");
+                CallableStatement cstmt = App.conn.prepareCall("call kup_bilet2( ?, ?, ? )");
                 cstmt.setInt(1, id_koncertu);
-                cstmt.setInt(2, rodzaj_miejsca);
+                System.out.println( id_koncertu );
+                cstmt.setString(2, rodzaj_miejsca == 0 ? "siedzace" : "stojace" );
                 cstmt.setInt(3, ilosc_biletow);
                 cstmt.executeUpdate();
-
+                
+                dialog.dispose();
 
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -86,7 +88,7 @@ public class BuyDialog extends WindowAdapter implements ActionListener, ItemList
             try {
                 Statement stmt = App.conn.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT DISTINCT cena FROM bilety " +
-                        "JOIN koncerty ON bilety.id_koncertu = koncerty.id_koncertu" +
+                        "JOIN koncerty ON bilety.id_koncertu = koncerty.id_koncertu " +
                         "WHERE rodzaj_miejsca = 'siedzace' " +
                         "AND bilety.id_koncertu = " + id_koncertu);
                 rs.next();
@@ -100,7 +102,7 @@ public class BuyDialog extends WindowAdapter implements ActionListener, ItemList
             try {
                 Statement stmt = App.conn.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT DISTINCT cena FROM bilety " +
-                        "JOIN koncerty ON bilety.id_koncertu = koncerty.id_koncertu" +
+                        "JOIN koncerty ON bilety.id_koncertu = koncerty.id_koncertu " +
                         "WHERE rodzaj_miejsca = 'stojace' " +
                         "AND bilety.id_koncertu = " + id_koncertu);
                 rs.next();

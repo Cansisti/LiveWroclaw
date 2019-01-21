@@ -232,6 +232,7 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
             dodaj_kom_obiektu();
         } else if (arg0.getSource() == bKup) {
             new BuyDialog( idks.get( list.getSelectedIndex() ) );
+            search();
         }
         else if( arg0.getSource() == bOcen ) {
         	new CommentDialog();
