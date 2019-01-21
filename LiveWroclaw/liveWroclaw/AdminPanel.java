@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +27,7 @@ public class AdminPanel extends Panel implements ActionListener, ItemListener {
 	Panel ctrl1, ctrl2;
 	TextField nazwa, kategoria, login, passwd;
 	Label zid, ret;
+	Button backup;
 	
 	ArrayList<Integer> zids;
 	ArrayList<String> names;
@@ -48,13 +50,15 @@ public class AdminPanel extends Panel implements ActionListener, ItemListener {
 		zid = new Label();
 		update = new Button( "Aktualizuj" );
 		ret = new Label();
+		backup = new Button( "Backup" );
 		
 		ctrl1.setLayout( new GridLayout( 3, 2) );
 		zespoly.addItemListener( this );
 		add.addActionListener( this );
 		update.addActionListener( this );
-		ctrl2.setLayout( new GridLayout( 3, 2) );
+		ctrl2.setLayout( new GridLayout( 4, 2) );
 		passwd.setEchoChar( '#' );
+		backup.addActionListener( this );
 		
 		ctrl1.add( new Label( "Nazwa:" ) );
 		ctrl1.add( nazwa );
@@ -68,6 +72,7 @@ public class AdminPanel extends Panel implements ActionListener, ItemListener {
 		ctrl2.add( passwd );
 		ctrl2.add( ret );
 		ctrl2.add( add );
+		ctrl2.add( backup );
 		add( zespoly, BorderLayout.NORTH );
 		add( ctrl1, BorderLayout.CENTER );
 		add( ctrl2, BorderLayout.SOUTH );
@@ -125,6 +130,14 @@ public class AdminPanel extends Panel implements ActionListener, ItemListener {
 				}
 				passwd.setText( "" );
 			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		if( e.getSource() == backup ) {
+			try {
+				System.out.println( "BACKUP" );
+				Runtime.getRuntime().exec( "mysqldump livewroclaw2 -uroot -pMalverbis > backup.sql" );
+			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		}
