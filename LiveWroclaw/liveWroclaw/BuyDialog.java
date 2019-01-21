@@ -85,7 +85,11 @@ public class BuyDialog extends WindowAdapter implements ActionListener, ItemList
 
             try {
                 Statement stmt = App.conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT DISTINCT cena FROM bilety WHERE rodzaj_miejsca = 'siedzace' ");
+                ResultSet rs = stmt.executeQuery("SELECT DISTINCT cena FROM bilety " +
+                        "JOIN koncerty ON bilety.id_koncertu = koncerty.id_koncertu" +
+                        "WHERE rodzaj_miejsca = 'siedzace' " +
+                        "AND bilety.id_koncertu = " + id_koncertu);
+                rs.next();
                 cena = rs.getInt(1);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -95,7 +99,11 @@ public class BuyDialog extends WindowAdapter implements ActionListener, ItemList
         if (arg0.getItem().equals("Stojące")) {
             try {
                 Statement stmt = App.conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT DISTINCT cena FROM bilety WHERE rodzaj_miejsca = 'stojace' ");
+                ResultSet rs = stmt.executeQuery("SELECT DISTINCT cena FROM bilety " +
+                        "JOIN koncerty ON bilety.id_koncertu = koncerty.id_koncertu" +
+                        "WHERE rodzaj_miejsca = 'stojace' " +
+                        "AND bilety.id_koncertu = " + id_koncertu);
+                rs.next();
                 cena = rs.getInt(1);
             } catch (SQLException e) {
                 e.printStackTrace();
