@@ -1,9 +1,9 @@
 package liveWroclaw;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class SearchPanel extends Panel implements ActionListener, KeyListener, ItemListener {
@@ -11,67 +11,54 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
 
     TextField searchbox;
     List list;
-    //    List koncerty;
     List zespoly;
     List obiekty;
-    JButton bData;
-    JButton bCena;
-    JButton bZespoly;
-    JButton bObiekty;
+    Button bData;
+    Button bCena;
+    Button bOcen;
+    Button bKup;
+    Panel ctrl;
+    
+    ArrayList<Integer> idks;
 
     private StringTokenizer st;
 
-
     public SearchPanel() {
-        setLayout(new BorderLayout());
+        setLayout( new BorderLayout() );
+        idks = new ArrayList<>();
 
         searchbox = new TextField();
-
-        list = new List(17);
+        ctrl = new Panel();
+        list = new List(16);
         list.addItemListener( this);
-
-//        koncerty = new List(17);
-//        //koncerty.addItemListener( this );
         zespoly = new List(17);
         zespoly.addItemListener(this);
         obiekty = new List(17);
         obiekty.addItemListener( this);
-
-
         searchbox.addKeyListener(this);
+        ctrl.setLayout( new GridLayout( 1, 3 ) );
 
-        add(searchbox, BorderLayout.NORTH);
-
-        add(list, BorderLayout.CENTER);
-//        add(koncerty, BorderLayout.CENTER);
-        add(zespoly, BorderLayout.CENTER);
-        add(obiekty, BorderLayout.CENTER);
-
-
-        search();
-
-        /******/
-        bData = new JButton("Szukaj po dacie");
-        bData.setBounds(50, 50, 30, 10);
-        add(bData);
+        add( searchbox, BorderLayout.NORTH );
+        add( list, BorderLayout.CENTER );
+        add( ctrl, BorderLayout.SOUTH );
+        
+        bData = new Button("Szukaj po dacie");
+        ctrl.add( bData );
         bData.addActionListener(this);
 
-        bCena = new JButton("Szukaj po cenie");
-        bCena.setBounds(50, 60, 30, 10);
-        add(bCena);
+        bCena = new Button("Szukaj po cenie");
+        ctrl.add( bCena );
         bCena.addActionListener(this);
+        
+        bOcen = new Button( "Oceń" );
+        ctrl.add( bOcen );
+        bOcen.addActionListener( this );
+        
+        bKup = new Button( "Kup bilety" );
+        ctrl.add( bKup );
+        bKup.addActionListener( this );
 
-        bZespoly = new JButton("Podglad zespolow");
-        bZespoly.setBounds(50, 70, 30, 10);
-        add(bZespoly);
-        bZespoly.addActionListener(this);
-
-        bObiekty = new JButton("Podglad obiektow");
-        bObiekty.setBounds(50, 80, 30, 10);
-        add(bObiekty);
-        bObiekty.addActionListener(this);
-
-
+        search();
     }
 
     void search() {
@@ -79,8 +66,9 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
         System.out.println("Wyszukaj " + wzor);
         try {
             list.removeAll();
+            idks.clear();
             Statement stmt = App.conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT data_koncertu, il_pozostalych_biletow, nazwa_zespolu, kategoria, nazwa_obiektu FROM koncerty\n" +
+            ResultSet rs = stmt.executeQuery("SELECT data_koncertu, il_pozostalych_biletow, nazwa_zespolu, kategoria, nazwa_obiektu, id_koncertu FROM koncerty\n" +
                     "        JOIN zespoly ON koncerty.id_zespolu = zespoly.id_zespolu\n" +
                     "        JOIN obiekty ON koncerty.id_obiektu = obiekty.id_obiektu\n" +
                     "        WHERE data_koncertu >= now() AND\n" +
@@ -91,6 +79,7 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
 
             while (rs.next()) {
                 list.add(rs.getString(1));
+                idks.add( rs.getInt( "id_koncertu" ) );
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -109,8 +98,9 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
 
         try {
             list.removeAll();
+            idks.clear();
             Statement stmt = App.conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT data_koncertu, il_pozostalych_biletow, nazwa_zespolu, kategoria, nazwa_obiektu FROM koncerty\n" +
+            ResultSet rs = stmt.executeQuery("SELECT data_koncertu, il_pozostalych_biletow, nazwa_zespolu, kategoria, nazwa_obiektu, id_koncertu FROM koncerty\n" +
                     "        JOIN zespoly ON koncerty.id_zespolu = zespoly.id_zespolu\n" +
                     "        JOIN obiekty ON koncerty.id_obiektu = obiekty.id_obiektu\n" +
                     "        WHERE data_koncertu >= now() AND\n" +
@@ -120,6 +110,7 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
 
             while (rs.next()) {
                 list.add(rs.getString(1));
+                idks.add( rs.getInt( "id_koncertu" ) );
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -131,9 +122,10 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
         String wzor = searchbox.getText();
         System.out.println("Wyszukaj " + wzor);
         try {
+        	idks.clear();
             list.removeAll();
             Statement stmt = App.conn.createStatement();
-            ResultSet rs = stmt.executeQuery("  SELECT data_koncertu, il_pozostalych_biletow, nazwa_zespolu, kategoria, nazwa_obiektu FROM koncerty\n" +
+            ResultSet rs = stmt.executeQuery("  SELECT data_koncertu, il_pozostalych_biletow, nazwa_zespolu, kategoria, nazwa_obiektu, id_koncertu FROM koncerty\n" +
                     "        JOIN zespoly ON koncerty.id_zespolu = zespoly.id_zespolu\n" +
                     "        JOIN obiekty ON koncerty.id_obiektu = obiekty.id_obiektu\n" +
                     "        WHERE data_koncertu >= now() AND\n" +
@@ -142,6 +134,7 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
 
             while (rs.next()) {
                 list.add(rs.getString(1));
+                idks.add( rs.getInt( "id_koncertu" ) );
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -228,19 +221,17 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
     }
 
     @Override
-    public void actionPerformed(ActionEvent arg0) {
+    public void actionPerformed( ActionEvent arg0 ) {
         if (arg0.getSource() == bData) {
             search2();
         } else if (arg0.getSource() == bCena) {
             search3();
-        } else if (arg0.getSource() == bZespoly) {
-            podglad_zespolow();
-        } else if (arg0.getSource() == bObiekty) {
-            podglad_obiektow();
         } else if (arg0.getSource() == zespoly) {
             dodaj_kom_zespolu();
         } else if (arg0.getSource() == obiekty) {
             dodaj_kom_obiektu();
+        } else if (arg0.getSource() == bKup) {
+            new BuyDialog( idks.get( list.getSelectedIndex() ) );
         }
 
     }
