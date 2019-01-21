@@ -31,7 +31,6 @@ CREATE PROCEDURE dodaj_kom_obiektu(nazwa varchar(50), ocena smallint(3), kom var
     SET @nazwa = nazwa;
     SET @query = NULL;
 
-    CALL podglad_obiektu(@nazwa);
     INSERT INTO komentarze_obiektu values (null, get_id_obiektu(@nazwa), ocena, kom);
 
   END $$
