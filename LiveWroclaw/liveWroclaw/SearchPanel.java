@@ -78,7 +78,7 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
                     "        OR kategoria LIKE '%" + wzor + "%');");
 
             while (rs.next()) {
-                list.add(rs.getString(1));
+            	list.add( rs.getString( 3 ) + " (" + rs.getString( 4 ) + "), " + rs.getString( 1 ) + " " + rs.getString( 5 ) + " (pozostało " + rs.getString( 2 ) + " biletów)" );
                 idks.add( rs.getInt( "id_koncertu" ) );
             }
         } catch (SQLException e) {
@@ -109,7 +109,7 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
                     "        AND data_koncertu <= " + data2 + ";");
 
             while (rs.next()) {
-                list.add(rs.getString(1));
+            	list.add( rs.getString( 3 ) + " (" + rs.getString( 4 ) + "), " + rs.getString( 1 ) + " " + rs.getString( 5 ) + " (pozostało " + rs.getString( 2 ) + " biletów)" );
                 idks.add( rs.getInt( "id_koncertu" ) );
             }
         } catch (SQLException e) {
@@ -133,7 +133,7 @@ public class SearchPanel extends Panel implements ActionListener, KeyListener, I
                     "       akt_najtanszy_bilet <= " + wzor + ";");
 
             while (rs.next()) {
-                list.add(rs.getString(1));
+            	list.add( rs.getString( 3 ) + " (" + rs.getString( 4 ) + "), " + rs.getString( 1 ) + " " + rs.getString( 5 ) + " (pozostało " + rs.getString( 2 ) + " biletów)" );
                 idks.add( rs.getInt( "id_koncertu" ) );
             }
         } catch (SQLException e) {
