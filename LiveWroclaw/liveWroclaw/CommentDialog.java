@@ -12,6 +12,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class CommentDialog extends WindowAdapter implements ActionListener, ItemListener {
 
@@ -38,6 +41,7 @@ public class CommentDialog extends WindowAdapter implements ActionListener, Item
 		accept = new Button( "Akceptuj" );
 
 		accept.addActionListener( this );
+		typ.add( "Wybierz" );
 		typ.add( "Obiekt" );
 		typ.add( "Zespół" );
 		typ.addItemListener( this );
@@ -61,24 +65,62 @@ public class CommentDialog extends WindowAdapter implements ActionListener, Item
 			try {
 				int oce = Integer.parseInt( ocena.getText() );
 				int co_oceniamy = typ.getSelectedIndex(); // 0 to obiekt, 1 to zespół
-				// można dodać sprawdzenie czy ocena mieści się w skali
+				if( oce < 1 || oce > 5 ) {
+					status.setText( "Ocena musi być z zakresu 1-5" );
+					return;
+				}
 				String komentarz = tekst.getText();
 				String nazwa = lista.getSelectedItem(); // odpowiednio nazwa zespołu lub obiektu
-				// TODO dodać ocenę
+				Statement stmt = App.conn.createStatement();
+				if( co_oceniamy == 1 ) {
+					stmt.executeUpdate( "insert into komentarze_obiektu values("
+							+ "null,"
+							+ " (select id_obiektu from obiekty where nazwa_obiektu = '" + nazwa + "'),"
+							+ oce + ",'"
+							+ komentarz + "' )" );
+				}
+				else if( co_oceniamy == 2 ) {
+					stmt.executeUpdate( "insert into komentarze_zespoly values("
+							+ "null,"
+							+ " (select id_zespolu from zespoly where nazwa_zespolu = '" + nazwa + "'),"
+							+ oce + ",'"
+							+ komentarz + "' )" );
+				}
+				dialog.dispose();
 			}
 			catch( NumberFormatException ex ) {
 				status.setText( "Ocena musi być liczbą" );
+			}
+			catch( SQLException ex2 ) {
+				ex2.printStackTrace();
 			}
 		}
 	}
 
 	@Override
 	public void itemStateChanged(ItemEvent arg0) {
+		lista.removeAll();
 		if( arg0.getItem().equals( "Zespół" ) ) {
-			// TODO załaduj w lista nazwy zespołów
+			try {
+				Statement stmt = App.conn.createStatement();
+				ResultSet rs = stmt.executeQuery( "select * from zespoly order by nazwa_zespolu" );
+				while( rs.next() ) {
+					lista.add( rs.getString( "nazwa_zespolu" ) );
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		if( arg0.getItem().equals( "Obiekt" ) ) {
-			// TODO załaduj w lista nazwy obiektów
+			try {
+				Statement stmt = App.conn.createStatement();
+				ResultSet rs = stmt.executeQuery( "select * from obiekty order by nazwa_obiektu" );
+				while( rs.next() ) {
+					lista.add( rs.getString( "nazwa_obiektu" ) );
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
