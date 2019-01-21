@@ -6,11 +6,11 @@ CREATE USER 'klient'@'localhost' IDENTIFIED BY 'klient';
 grant select on livewroclaw2.obiekty to 'klient'@'localhost';
 grant select on livewroclaw2.koncerty to 'klient'@'localhost';
 grant select on livewroclaw2.bilety to 'klient'@'localhost';
+grant insert on livewroclaw2.komentarze_zespoly to 'klient'@'localhost';
+grant insert on livewroclaw2.komentarze_obiektu to 'klient'@'localhost';
 grant select on livewroclaw2.zespoly to 'klient'@'localhost';
 grant execute on procedure livewroclaw2.autoryzacja to 'klient'@'localhost';
 grant execute on procedure livewroclaw2.kup_bilet2 to 'klient'@'localhost';
-grant execute on procedure livewroclaw2.dodaj_kom_zespolu to 'klient'@'localhost';
-grant execute on procedure livewroclaw2.dodaj_kom_obiektu to 'klient'@'localhost';
 
 CREATE USER 'wlasciciel'@'localhost' IDENTIFIED BY 'wla7182311bvd1utdvu1d';
 grant execute on procedure livewroclaw2.autoryzacja to 'wlasciciel'@'localhost';
