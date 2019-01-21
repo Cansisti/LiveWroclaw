@@ -1,3 +1,5 @@
+use livewroclaw2;
+
 insert into obiekty values(null,1,'ERAT VOLUTPAT','313 Banding Way',9941,4684);
 insert into obiekty values(null,6,'MORBI','652 Anzinger Court',4633,3218);
 insert into obiekty values(null,2,'EST ET','032 Hayes Park',2498,8606);

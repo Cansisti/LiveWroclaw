@@ -1,5 +1,7 @@
 SELECT nazwa_obiektu FROM obiekty;
 
+USE livewroclaw2;
+
 
 DELIMITER $$
 CREATE PROCEDURE podglad_obiektu(nazwa varchar(50))

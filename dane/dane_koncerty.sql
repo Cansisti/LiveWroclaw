@@ -1,3 +1,5 @@
+use livewroclaw2;
+
 insert into koncerty values(null,14,15,'2019-10-13','2019-01-08',0,0,0,0);
 insert into koncerty values(null,12,118,'2019-06-23','2019-03-07',0,0,0,0);
 insert into koncerty values(null,2,126,'2019-07-05','2019-01-12',0,0,0,0);

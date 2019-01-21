@@ -1,3 +1,4 @@
+use livewroclaw2;
 drop procedure if exists dodaj_wlasciciela;
 delimiter $$
 

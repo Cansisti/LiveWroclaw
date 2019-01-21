@@ -253,6 +253,7 @@ public class ManagePanel extends Panel implements ActionListener, ItemListener {
 			TextField nazwa, adres, msie, msto;
 			Button add, cancel;
 			Label status;
+
 			
 			DodajObiekt() {
 				setLayout( new GridLayout( 11, 1 ) );
