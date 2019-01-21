@@ -53,6 +53,12 @@ BEGIN
     JOIN koncerty ON bilety.id_koncertu = koncerty.id_koncertu
   SET czy_sprzedany = 1
   WHERE rodzaj_miejsca = rodzaj AND czy_sprzedany = 0 AND bilety.id_koncertu = id ;
+
+
+  UPDATE koncerty
+  SET il_pozostalych_biletow = il_pozostalych_biletow - 1
+  WHERE id_koncertu = id ;
+
   END WHILE;
 
   COMMIT;
