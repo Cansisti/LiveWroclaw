@@ -215,3 +215,38 @@ __:begin
 end$$
 
 delimiter ;
+
+drop procedure if exists aktualizuj_koncerty;
+
+delimiter $$
+
+create procedure aktualizuj_koncerty()
+__:begin
+	declare done int default 0;
+	declare id int default 0;
+	
+	declare msie int default 0;
+	declare msto int default 0;
+	declare min_cena int default 0;
+	declare pozo int default 0;
+	
+	declare cur1 cursor for select id_koncertu from koncerty;
+	declare continue handler for not found set done = 1;
+	
+	start transaction;
+	
+	open cur1;
+	while done = 0 do
+		fetch cur1 into id;
+		select count(*) into msie from bilety where rodzaj_miejsca = 'siedzace' and id_koncertu = id;
+		select count(*) into msto from bilety where rodzaj_miejsca = 'stojace' and id_koncertu = id;
+		select min(cena), count(*) into min_cena, pozo from bilety where id_koncertu = id and not czy_sprzedany;
+		update koncerty set il_miejsc_siedzacych = msie, il_miejsc_stojacych = msto, il_pozostalych_biletow = pozo, akt_najtanszy_bilet = min_cena where id_koncertu = id;
+	end while;
+	close cur1;
+	
+	commit;
+	
+end$$
+
+delimiter ;
